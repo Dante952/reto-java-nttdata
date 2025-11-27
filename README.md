@@ -28,7 +28,7 @@ La solución se divide en tres artefactos principales desplegados independientem
 
 La solución sigue un patrón de API Gateway con Service Discovery. El *User Service* implementa una **Arquitectura Limpia** (Clean Architecture) separando Dominio, Aplicación e Infraestructura.
 
-![Diagrama de arquitectura](images/diagrama_componentes.png)
+![Diagrama de arquitectura](images/diagrama_componentes_v2.png)
 
 ---
 
