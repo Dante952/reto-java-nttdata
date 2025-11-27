@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.0.0'
 	id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.sonarqube' version '7.1.0.6387'
+    id 'jacoco'
 }
 
 group = 'com.nttdata'
@@ -22,6 +24,22 @@ configurations {
 
 repositories {
 	mavenCentral()
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+    }
+}
+
+test.finalizedBy jacocoTestReport
+
+sonar {
+    properties {
+        property "sonar.projectKey", "reto-nttdata"
+        property "sonar.projectName", "reto-nttdata"
+        property "sonar.gradle.skipCompile", "true"
+    }
 }
 
 ext {

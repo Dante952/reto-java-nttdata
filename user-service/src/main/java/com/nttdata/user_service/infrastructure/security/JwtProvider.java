@@ -3,16 +3,18 @@ package com.nttdata.user_service.infrastructure.security;
 import io.jsonwebtoken.Jwts;
 import javax.crypto.SecretKey;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
 public class JwtProvider {
-    private final String SECRET_KEY_STRING = "una_clave_secreta_muy_larga_y_segura_para_el_ejercicio_123456";
+    @Value("${security.jwt.secret}")
+    private String keyString;
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY_STRING.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(keyString.getBytes(StandardCharsets.UTF_8));
     }
 
     public String createToken(String email) {
