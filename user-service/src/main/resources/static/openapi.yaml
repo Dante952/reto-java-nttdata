@@ -1,0 +1,171 @@
+openapi: 3.0.3
+info:
+  title: User Service API
+  description: API RESTful para la gestión de usuarios del Reto Técnico NTT Data.
+  version: 1.0.0
+  contact:
+    name: Patricio Dante Torres Martinez
+    email: dantetinez20@gmail.com
+
+servers:
+  - url: http://localhost:8081
+    description: Servidor Local (Directo)
+  - url: http://localhost:8080
+    description: API Gateway
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # Esquema para crear/actualizar usuario
+    UserRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: "Juan Rodriguez"
+        email:
+          type: string
+          format: email
+          example: "juan.rodriguez@dominio.cl"
+          description: "Debe tener formato válido. Regex aplicada."
+        password:
+          type: string
+          format: password
+          example: "Hunter2Password"
+          description: "Debe contener al menos una mayúscula y números."
+        phones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Phone'
+
+    # Objeto anidado de teléfonos
+    Phone:
+      type: object
+      properties:
+        number:
+          type: string
+          example: "1234567"
+        cityCode:
+          type: string
+          example: "1"
+        countryCode:
+          type: string
+          example: "57"
+
+    # Esquema de respuesta exitosa
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+        created:
+          type: string
+          format: date-time
+          example: "2023-10-27T10:00:00"
+        modified:
+          type: string
+          format: date-time
+          example: "2023-10-27T10:00:00"
+        lastLogin:
+          type: string
+          format: date-time
+          example: "2023-10-27T10:00:00"
+        token:
+          type: string
+          description: "JWT Token generado para el usuario"
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        isActive:
+          type: boolean
+          example: true
+
+    # Esquema de error estandarizado
+    ErrorResponse:
+      type: object
+      properties:
+        mensaje:
+          type: string
+          example: "El correo ya registrado"
+
+paths:
+  /api/users:
+    post:
+      summary: Crear un nuevo usuario
+      description: Registra un usuario, guarda sus teléfonos y genera un token JWT inicial.
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '201':
+          description: Usuario creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Error de validación (formato correo, password) o usuario ya existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/{id}:
+    put:
+      summary: Actualizar un usuario existente
+      description: Actualiza los datos del usuario. Requiere el token JWT exclusivo del usuario.
+      operationId: updateUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: UUID del usuario a actualizar
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: Usuario actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Error de validación o datos incorrectos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: No autorizado (Token inválido o no pertenece al usuario)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

@@ -72,11 +72,14 @@ cd gateway-service
 
 ## 📄 Documentación de API (Swagger)
 La documentación interactiva de los endpoints está disponible directamente en el microservicio de usuarios.
+- URL: http://localhost:8081/swagger-ui/index.html
 
-### Captura de Swagger UI
 
 ## ✅ Calidad de Código (SonarQube)
 El proyecto ha sido analizado estáticamente para garantizar la calidad, seguridad y mantenibilidad del código.
+
+![validacion SonarQueb](images/sonar.png)
+
 
 ### Captura de Reporte SonarQube
 
